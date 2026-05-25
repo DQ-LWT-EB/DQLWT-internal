@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DQ LWT Organisational Dashboard</title>
+
+  <!-- ============================================================
+       FONTS
+       Place the following font files in a /fonts/ folder alongside
+       this index.html before deploying to GitHub Pages:
+         - Marine-UPBold.otf
+         - Marine-UPRegular.otf
+         - aptos.ttf
+         - aptos-bold.ttf
+       ============================================================ -->
+  <style>
+    @font-face {
+      font-family: 'Marine';
+      src: url('/fonts/Marine-UPBold.otf') format('opentype');
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Marine';
+      src: url('/fonts/Marine-UPRegular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Aptos';
+      src: url('/fonts/aptos.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Aptos';
+      src: url('/fonts/aptos-bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    /* ============================================================
+       DESIGN TOKENS — DQ Brand
+       ============================================================ */
+    :root {
+      --dq-teal:      #004157;
+      --dq-teal-mid:  #3C748D;
+      --dq-gold:      #D9AB34;
+      --dq-cream:     #FAF4EF;
+      --dq-grey:      #3F3939;
+      --dq-rule:      rgba(0, 65, 87, 0.15);
+
+      --font-heading: 'Marine', 'Segoe UI', 'Arial Narrow', Arial, sans-serif;
+      --font-body:    'Aptos', 'Segoe UI', system-ui, sans-serif;
+
+      --max-width: 1200px;
+      --header-height: 72px;
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--dq-cream);
+      color: var(--dq-grey);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       HEADER — teal bar with logo + dashboard title
+       ============================================================ */
+    header {
+      background-color: var(--dq-teal);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 24px;
+    }
+
+    .header-logo {
+      flex-shrink: 0;
+      height: 36px;
+      /* ============================================================
+         LOGO
+         Replace the src below with the correct path to your logo file.
+         The white version (QT_WKA_Side_By_Side_White.png) works best
+         on the teal background.
+         Expected path: data:image/png;base64,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
+         ============================================================ */
+      display: block;
+    }
+
+    .header-logo img {
+      height: 36px;
+      width: auto;
+      display: block;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.3);
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    /* ============================================================
+       INTRO SECTION
+       ============================================================ */
+    .intro {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 40px 36px;
+      border-bottom: 1px solid var(--dq-rule);
+    }
+
+    .intro-label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dq-gold);
+      margin-bottom: 14px;
+    }
+
+    .intro h1 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dq-teal);
+      line-height: 1.25;
+      margin-bottom: 20px;
+    }
+
+    .intro-body {
+      max-width: 100%;
+    }
+
+    .intro-body p {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--dq-grey);
+      margin-bottom: 0.75em;
+    }
+
+    .intro-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ============================================================
+       DASHBOARD EMBED SECTION
+       ============================================================ */
+    .dashboard-section {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 40px 0;
+    }
+
+    .dashboard-section-label {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dq-teal-mid);
+      margin-bottom: 16px;
+    }
+
+    /* Responsive 16:9 container for Power BI */
+    .embed-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 ratio */
+      background-color: var(--dq-teal);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0, 65, 87, 0.12);
+    }
+
+    /* ============================================================
+         POWER BI EMBED CODE
+         Replace the <iframe> placeholder below with your Power BI
+         embed code. The iframe must have:
+           style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+         Remove the width="" and height="" attributes from your embed
+         code — the container handles sizing responsively.
+         ============================================================ */
+    .embed-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ============================================================
+       METADATA ROW — below the embed
+       ============================================================ */
+    .dashboard-meta {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 40px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-meta-note {
+      font-size: 0.8125rem;
+      color: var(--dq-teal-mid);
+    }
+
+    .dashboard-meta-updated {
+      font-size: 0.8125rem;
+      color: var(--dq-teal-mid);
+      text-align: right;
+    }
+
+    /* ============================================================
+       DISCLAIMER SECTION
+       ============================================================ */
+    .disclaimer {
+      max-width: var(--max-width);
+      width: 100%;
+      margin: 40px auto 0;
+      padding: 28px 40px;
+    }
+
+    .disclaimer-inner {
+      background-color: #f0e8df; /* slightly deeper cream for contrast */
+      border-left: 3px solid var(--dq-gold);
+      border-radius: 2px;
+      padding: 20px 24px;
+    }
+
+    .disclaimer-inner p {
+      font-size: 0.8125rem;
+      line-height: 1.65;
+      color: var(--dq-grey);
+      margin-bottom: 0.5em;
+    }
+
+    .disclaimer-inner p:last-child {
+      margin-bottom: 0;
+    }
+
+    .disclaimer-inner a {
+      color: var(--dq-teal);
+      text-decoration: underline;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      margin-top: auto;
+      background-color: var(--dq-teal);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-logo img {
+      height: 24px;
+      width: auto;
+      opacity: 0.7;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 768px) {
+      header {
+        padding: 0 20px;
+        gap: 16px;
+      }
+
+      .header-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+      }
+
+      .header-logo img {
+        height: 28px;
+      }
+
+      .intro,
+      .dashboard-section,
+      .dashboard-meta,
+      .disclaimer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .intro {
+        padding-top: 32px;
+        padding-bottom: 28px;
+      }
+
+      .intro h1 {
+        font-size: 1.375rem;
+      }
+
+      footer {
+        padding: 16px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-divider {
+        display: none;
+      }
+
+      .header-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+       Logo image path: data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABeAMgDASIAAhEBAxEB/8QAHQABAAICAgMAAAAAAAAAAAAAAAYHCAkEBQECA//EADcQAAEDBAIBAgQDBgUFAAAAAAECAwQABQYRBxIhE0EIIjFRFSNhFBYyQnGBMzZSobJTYnSDov/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwDDKlKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUClKUCprxVxfmHJc6VHxeA0tmEgOTJkl0NR46TvXdZ9zo+Bs+CdaBqFVlLx9Y71fPgXu9rwaDIuN2mZGPxSPDHZ5TY9MgaHkjQbOvsT+tBSnLPFOYcYyYKMmixjGuCCuHMiPh5h8DW+qh7jY8EDwQagtbFeJbejHZ3EfHd5da/eSyWWddZUfuFLjeon00tn9fz1jx/wBM+2qi/E2LqicSW+y8i2l+2rzLkEvy4VwaLandJLzbakq+qVrjJGvft+tBgqttxCErU2tKF/wqI0Ff0+9C24G0ultYbUdJUR4J/rWwLlC+2W6TV8e5xj2Vqtd1ymDCtj9xszEW3RUpfTtth9CuykrbQsBXk6UR4BIHL5TvEQyrpx5d8VyqRaLtcbfarOh2xR2rTBWXEpSpl9Kuygd9vOyOugEjYoNefovej63pL9Leu/U9d/bdeA06Wi8G1lsHRX1Ogf61sLvWZ3G65vzXi89UaRheMYwA1AMVsIS6qN3V8wT2PkLGiSBoa1XVZnMyO4/DvdJFgcyHjoY/j/oT7BcrE0iHKT0IWGnVN9iVDYCkL/07SCSSGGGY4BkuJY3jl/vkZliHkcdUq29XkrWtoBB7KSP4QQ4nW/NRhbTiEoUttaUrG0kp0FD9PvWxXkN/Jr/y5xvhuQMmXgtyhNSbm8uIgxptwbQ8820V615LCVemPBHsa6y55Rk8XD79e+U7ezAbg51CbxOO9FQy4hpuW1r0yACpJbC/m909/OtCg19V5SCpQSkEk+AB71sjyDCbabryVhrTrKcg5CiSp8dWx+Www1HZQFf+15xQ/v8Aao2vLo9tuHKdxx30moHGmMM2OxrUhKw3K6Od1AEEbC22kH7+mKDAJ1pxlZbdbW2sfVKho17rjOJhNTDr0nXFtp8+dpCSf+YrJb4wbvNvXEHD13yJTMrI7nbXpkmWGUNrWhSWVJBCQAAe4OgNbB+9Y7Sf8rQP/Nk/8GKD526y3a4w5MyBbpMmPF/x3GmypLf5a3PmI+nyNOK/ohR9jXwnwpcB5DU2M7HccZbfQlxOiptxAWhQ/RSVAg/Y1ZPw3zZiMulWpLSF2+XGLktbiCtuP02EOKSnytKvUUwUJ+ZaZCkp+ZSatHlTEMZ/c+DG/AUylWwGJCULyxCdYZSXFLSJjvZqaPUUAlKEdkpBB9NRKQGN0mxXyNaot2k2a4s26YrpGluRVpZfV58IWR1UfB8A+xrku4llTV9asLuM3pF2eR6jUFUB0SFo0T2DfXsRpKjsD2P2rKn4XrezypwDGwmX1dfxLLoU9DZ9oq3gpf8A8qlf7VcVzl2SbkS/iAZbQ5EsWO3eANnyp2PKUlv+6wHgB/30GuKXBmxH3mJUOQw6ytSHUOtFKm1JOlJUCPBBBBB+lcetgmJ4mjI8aHG17ayaxi4WNyQ6u45UgTnHVq2si3NrWkNFSiolWiCepTvzVdYnxZwpEs/EjeR41eJ91zqEU9mbgtDLbobbUp1QCgfqtIAHjyrYOhQYgVz4llvEu1SrtEtM+RbohAky2o61Msk/QLWBpO9j6n3rKbFeFsFs86/tX7C5t5hs5M7bIlzu+QNWqEiOlZSA2oLDjzw0djp1URoEEHdlYnw3Zotj5c4ptFzcg2mVcrd6b8hQWtltaGXVJ3/Mf4kp39fl37mgwApWUkfjHBHua8sx+NxdkL9nxWH1W29d0xm3njspfkyHHEhplQG0hvaiNq0ddRFPit42xHDLThOR4lFbgs5FFfVIhx7mZ8ZpbXpHbT58rSfUI39D1GtUFDUpSgVIcEzbKsHvDd0xa+TbW+laVrSy6Q291OwlxG+q0/ooEVHqUFjco8r3LM83h5rbrWxit/bjhMqZaJDrS5Dw2C7ve0HrpOgSfB2TvxFshzLLsidZdv8AlN7uy2FhbJmz3Xi2ofQp7KPU/qK6KlB3+Q5rmORwmIWQZXfbvFjrC2WZtwdeQ2oAgKSlaiAdEjf10a5EzkPP5keLHl5xkshmG4l2Mhy6vKSytP8ACpIKvlI9iPI9qjFKC0MEsHIOV4rlmU2/MJkeO2hxy9B24PBya21HcdUpej+aBpKPm35eT7E1K7pgvKmVXmVgcvkyRfVwGGX5ESXdn3WGlKWUhBBKgFpUANEb2pIA8iqPjXO4xYq4sa4S2I7gUFtNvKShQUAFbAOjsAA/cAVzHMoyVyWJbmRXdcgNttB1U1wrCG1BaE73vqlQCgPoCAR5oJ/Ft+b3TKJWC3PkaezBxRK5BffmSXIcBbGkkpA30KSShJA8nSU7KgD2EnCuQs7veH26651Jvdwu8IzmEzJr8lduYDYc7rBKlJ2nroAfMSNbqqrbfb5bH5L9tvNxhOyklMhyPKW2p4E7IWUkdgT969lZBf1RGIir5c1R47RZYaMtZQ02VJUUJG9BPZCFaHjaQfYUFiwrXynPzzG2k5le1X+8MSGmZX4hJW/GjMyHm3eygSvoFMOq6p3vr9N12MbizkhNgyD0spU1DN5ctl0iCa8BJkCW1GQpxA8LC3XFaJ2fyl79qql3Ib+7F/ZHb5c3I4Lp9JUtZRt3/EOt6+f+b7++68/vHkPqF38eunqFwOlX7W5srC/UCt7+vf5t/wCrz9aDvuVYF+tFyttrvGTv3+M3AQ5bnFvuqQ0wSUhCUueUD5PAHgjqR4IqMuym12WNDAV6jUh51R140tLQH9/kP+1et0uE+6znZ90nSZ0t0guPyXVOOLIGvKlEk+BXFoJNhObXbEGJyLQzD9WYUkvuIUXGilDqUlBCgBpTiXBsH52Wj/KQe2h8s5jbcRbxiwzEWOGloNLct5W066j6qCldj5WolSiNFR0CeqUJTA6UE54g5Uy7iu5T5+JvxUOT2UsvpkM+oghJ2k62PI8+f1NfWFy5msTiubxszNZFjmSDIdJb/P7FxLhAXvwCpIJ/qfvUBpQXm38UvJbdyj3ZETFk3ZuMIr9x/CEftMpsfRLjm96B86T1G/aomvmfM1O4Q5u3JOEpUmzgR/CQoIB7+fn8Np+3vVcUoLlb+JHkL8Pkw5cXG7gHLi5c4zk21IeVBkrUVFxjsdJPZSiCQSOx1XAybn7kDIIORxJrttbTkRjqnrYjFC+zASGyg9vlI6J+n2qqaUF2N/E1yMqbIlT4mN3P9tgIgT2plsC25zSO3T1k9h2I7ufYfOrYI1qH8n8rZTyLarNbMhRa0RrL6qYKIUNMcNIX12gJT8vUBCAAB4CagdKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKD/9k=
+       Upload your logo to a /images/ folder in the repo root.
+       ============================================================ -->
+  <header>
+    <div class="header-divider"></div>
+    <span class="header-title">DQ LWT Organisational Dashboard</span>
+  </header>
+
+  <!-- ============================================================
+       INTRO
+       ============================================================ -->
+  <section class="intro" aria-labelledby="dashboard-heading">
+    <p class="intro-label">Internal Use Only</p>
+    <h1 id="dashboard-heading">DQ LWT Organisational Dashboard</h1>
+    <div class="intro-body">
+      <p>
+        This dashboard brings together data from Simpleview CRM across the Member Partner,
+        Travel Trade, Bureau, Community Stakeholder, and Event user groups, alongside Act-On
+        reporting, to provide the DQ/LWT team with a single view of performance and recent
+        activity.
+      </p>
+      <p>
+        It is intended to support internal reporting, performance monitoring, operational
+        management, and review of Simpleview-related activity across the organisation.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DASHBOARD EMBED
+       ============================================================ -->
+  <main>
+    <div class="dashboard-section">
+      <p class="dashboard-section-label">Dashboard</p>
+
+      <!-- 16:9 responsive Power BI container -->
+      <div class="embed-container">
+
+        <!-- ======================================================
+             POWER BI EMBED CODE
+             Paste your <iframe> tag here.
+             Remove the width="" and height="" attributes from the
+             iframe — sizing is handled by the container above.
+             Add these styles directly to the iframe tag:
+               style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+             ====================================================== -->
+        <iframe
+          title="DQ LWT RTO Dashboard 2026"
+          src="https://app.powerbi.com/view?r=eyJrIjoiZTFiMGQ3MmUtYWRiZi00ZjgzLWE2ZWMtODA2YzM5ZTQ2NTA5IiwidCI6ImRlMDA0ZGQ4LTYzNTQtNDM5Yy1hY2E0LWI0YjlhZjJkM2RjYiJ9&pageName=d847f30f69421a660500"
+          allowfullscreen="true"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+        ></iframe>
+        <!-- ====================================================== END EMBED ====== -->
+
+      </div>
+    </div>
+
+    <!-- Metadata row -->
+    <div class="dashboard-meta">
+      <span class="dashboard-meta-note">
+        Use the navigation panel within the dashboard to move between report pages.
+      </span>
+      <!-- OPTIONAL: Replace or remove the date below -->
+      <span class="dashboard-meta-updated">Last updated: <!-- DATE --></span>
+    </div>
+
+    <!-- ============================================================
+         DISCLAIMER
+         ============================================================ -->
+    <div class="disclaimer">
+      <div class="disclaimer-inner">
+        <p>
+          This dashboard, including all datasets, insights, reporting outputs, and related
+          resources, is intended for internal Destination Queenstown and Lake Wānaka Tourism
+          staff use only. The content must not be distributed, reproduced, published, or shared
+          externally.
+        </p>
+        <p>
+          Any questions, please contact Maya at
+          <a href="mailto:info@queenstown-wanaka.nz">info@queenstown-wanaka.nz</a>.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer>
+    <span class="footer-copy">
+      &copy; <script>document.write(new Date().getFullYear())</script> Destination Queenstown
+      &amp; Lake Wānaka Tourism. Internal use only.
+    </span>
+  </footer>
+
+</body>
+</html>
