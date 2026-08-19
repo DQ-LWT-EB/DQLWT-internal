@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Context Prompts — DQ / LWT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #004157;
+    --mid-teal: #3C748D;
+    --light-teal: #6FA8C4;
+    --grey: #3F3939;
+    --cream: #FAF4EF;
+    --box-fill: #F3E9DE;
+    --white: #FFFFFF;
+    --border: #D8CBBB;
+    --mustard: #D9AB34;
+    --mustard-dark: #BC9226;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', 'Aptos', 'Segoe UI', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--grey);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--teal); }
+
+  /* ---------- Dark hero band: header + how-to-use ---------- */
+  .hero-band { background: var(--teal); padding-bottom: 8px; }
+  .hero-band .page-head { padding: 44px 0 24px; }
+  .hero-band .eyebrow { color: var(--light-teal); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .hero-band h1.title { color: var(--white); font-size: 38px; font-weight: 700; letter-spacing: 0.01em; margin: 8px 0 12px; text-transform: uppercase; }
+  .hero-band .dek { color: var(--cream); font-size: 17px; max-width: 640px; margin: 0 0 14px; }
+  .hero-band .meta { color: var(--light-teal); font-size: 13px; font-style: italic; }
+  .hero-band .why-blurb { color: var(--cream); font-size: 15px; max-width: 640px; margin: 16px 0 0; padding: 14px 16px; background: rgba(255,255,255,0.08); border-left: 4px solid var(--light-teal); border-radius: 2px; }
+  .hero-band .why-blurb strong { color: var(--white); }
+  .hero-band hr.rule { border: none; border-top: 1px solid rgba(255,255,255,0.25); margin: 24px 0 0; }
+
+  .hero-band section { padding: 36px 0 30px; }
+  .hero-band h2.section-title { color: var(--white); font-size: 22px; font-weight: 700; margin: 0 0 12px; }
+  .hero-band p { color: var(--cream); font-size: 15px; margin: 0 0 14px; }
+  .hero-band .note { background: rgba(255,255,255,0.08); border-left: 4px solid var(--light-teal); color: var(--cream); }
+
+  .hero-band table { width: 100%; border-collapse: collapse; margin: 6px 0 4px; font-size: 14px; }
+  .hero-band th, .hero-band td { text-align: left; padding: 10px 12px; border: 1px solid rgba(255,255,255,0.2); }
+  .hero-band th { background: rgba(255,255,255,0.14); color: var(--white); font-weight: 700; font-size: 13px; }
+  .hero-band td { color: var(--cream); }
+  .hero-band tr:nth-child(even) td { background: rgba(255,255,255,0.06); }
+
+  /* Step cards, single column, reads top to bottom */
+  .step-grid { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 26px; }
+  .step-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .step-card:hover { background: rgba(255,255,255,0.13); transform: translateX(3px); }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--teal);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-text { color: var(--cream); font-size: 14px; line-height: 1.5; }
+  .step-text strong { color: var(--white); display: block; margin-bottom: 2px; font-size: 14.5px; }
+
+  /* ---------- Sticky stepper nav ---------- */
+  nav.stepper { position: sticky; top: 0; z-index: 20; background: var(--teal); border-bottom: 1px solid rgba(255,255,255,0.18); padding: 10px 24px; }
+  .stepper-inner { max-width: 880px; margin: 0 auto; display: flex; gap: 6px; overflow-x: auto; }
+  .step-link {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.06);
+    color: var(--cream);
+    font-size: 13px; font-weight: 500;
+    text-decoration: none; white-space: nowrap; flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .step-link:hover { border-color: var(--white); background: rgba(255,255,255,0.16); }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); flex-shrink: 0; }
+  .step-link.done { border-color: var(--white); background: rgba(255,255,255,0.2); }
+  .step-link.done .step-dot { background: var(--white); }
+
+  /* ---------- Light sections below hero ---------- */
+  section.light { padding: 40px 24px 6px; border-top: 1px solid var(--border); max-width: 880px; margin: 0 auto; }
+  section.light:first-of-type { border-top: none; }
+  h2.section-title { color: var(--teal); font-size: 24px; font-weight: 700; margin: 0 0 14px; }
+  h3.sub-title { color: var(--mid-teal); font-size: 16px; font-weight: 700; margin: 22px 0 8px; }
+  p { margin: 0 0 14px; font-size: 15px; }
+  ul.checklist { padding-left: 22px; margin: 0 0 14px; }
+  ul.checklist li { margin-bottom: 8px; font-size: 14.5px; }
+
+  /* Prompt card */
+  .card { border: 1px solid var(--teal); border-radius: 4px; background: var(--box-fill); padding: 18px 20px; margin: 14px 0 18px; }
+  .card-label {
+    font-size: 12px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  textarea.prompt-text {
+    width: 100%; min-height: 190px; resize: vertical;
+    border: 1px solid var(--border); border-radius: 3px; background: var(--white); color: var(--grey);
+    font-family: 'Inter', sans-serif; font-size: 14px; font-style: italic; line-height: 1.6; padding: 12px 14px;
+  }
+  textarea.draft-input {
+    width: 100%; min-height: 130px; resize: vertical;
+    border: 1px dashed var(--mid-teal); border-radius: 3px; background: var(--white); color: var(--grey);
+    font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; padding: 12px 14px;
+  }
+  .draft-label { font-size: 12px; font-weight: 700; color: var(--mid-teal); text-transform: uppercase; letter-spacing: 0.04em; margin: 18px 0 8px; }
+  .draft-hint { font-size: 13px; color: var(--mid-teal); margin: 6px 0 0; }
+
+  button.copy-btn {
+    background: var(--teal); color: var(--white); border: none; border-radius: 3px;
+    padding: 6px 14px; font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;
+    cursor: pointer; white-space: nowrap; transition: background 0.15s ease;
+  }
+  button.copy-btn:hover { background: var(--mid-teal); }
+  button.copy-btn.copied { background: var(--light-teal); color: var(--teal); }
+
+  .note { border-left: 4px solid var(--mid-teal); background: var(--white); padding: 12px 16px; font-size: 14px; margin: 14px 0; }
+  .reference-box { border: 1px solid var(--border); background: var(--box-fill); border-radius: 4px; padding: 16px 18px; margin: 14px 0 18px; }
+  .reference-box .ref-title { font-size: 13px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 10px; }
+  .reference-box a { font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 20px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--teal); color: var(--white); font-weight: 700; font-size: 13px; }
+  tr:nth-child(even) td { background: var(--box-fill); }
+
+  button.primary-btn {
+    background: var(--mustard); color: var(--teal); border: none; border-radius: 5px;
+    padding: 18px 36px; font-size: 18px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; margin-top: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  button.primary-btn:hover { background: var(--mustard-dark); transform: translateY(-1px); }
+  .status-msg { font-size: 13px; color: var(--mid-teal); margin-top: 8px; min-height: 16px; }
+
+  .final-step {
+    border: 2px solid var(--teal); background: var(--white); border-radius: 6px;
+    padding: 18px 20px; margin: 18px 0;
+  }
+  .final-step .ft-title { color: var(--teal); font-weight: 700; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .final-step .ft-title .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: var(--white); font-size: 12px; font-weight: 700;
+  }
+  .final-step p { margin-bottom: 8px; }
+  .final-step p:last-child { margin-bottom: 0; }
+
+  footer { max-width: 880px; margin: 0 auto; padding: 20px 24px 60px; font-size: 13px; color: var(--mid-teal); font-style: italic; }
+
+  @media (max-width: 600px) {
+    .hero-band h1.title { font-size: 28px; }
+    .card-label { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero-band">
+  <header class="page-head wrap">
+    <div class="eyebrow">Destination Queenstown / Lake Wānaka Tourism</div>
+    <h1 class="title">AI Context Prompts</h1>
+    <p class="dek">Ready-to-paste prompts for building your Claude and Copilot custom instructions, know me, how I work, my team, and what to avoid.</p>
+    <p class="meta">Internal working tool · v1.0 · Owner: Eilidh Blanchard (AI Lead) · August 2026</p>
+    <p class="why-blurb"><strong>Why bother?</strong> Custom instructions are a one-time setup, tell your AI who you are once, and it remembers every chat after. No more explaining your role, tone or preferences from scratch each time. It takes about ten minutes, and every response comes back closer to a solid first draft starting point that you can use.</p>
+    <p class="why-blurb"><strong>Do it in one go.</strong> Work through all four prompts back to back rather than spreading them out, it shouldn't take more than 20 minutes in total. Tip: use voice mode in Claude or Copilot to talk through your answers instead of typing them, it's faster and tends to sound more like you.</p>
+    <hr class="rule">
+  </header>
+
+  <div class="wrap">
+    <section id="how-to-use">
+      <h2 class="section-title">How to use this page</h2>
+      <p>Each prompt below is a conversation starter, not a form. Copy it into a new chat in Claude or Copilot, answer the questions honestly, add attachments for context if you want, and let the AI write the draft. Paste that draft into the box underneath, this page holds onto it while your tab's open, so it can build your merge prompt in the last step.</p>
+
+      <div class="step-grid">
+        <div class="step-card"><div class="step-num">1</div><div class="step-text"><strong>Open your tool</strong>Claude or Copilot, whichever you'd normally use.</div></div>
+        <div class="step-card"><div class="step-num">2</div><div class="step-text"><strong>Work through each prompt</strong>One fresh chat per prompt, answered one question at a time.</div></div>
+        <div class="step-card"><div class="step-num">3</div><div class="step-text"><strong>Paste each draft below</strong>Drop the AI's output into the matching box as you go.</div></div>
+        <div class="step-card"><div class="step-num">4</div><div class="step-text"><strong>Build your merge prompt</strong>Step 5 combines your drafts, run it in a new chat.</div></div>
+        <div class="step-card"><div class="step-num">5</div><div class="step-text"><strong>Paste the result into settings</strong>Claude Preferences or Copilot Custom Instructions.</div></div>
+        <div class="step-card"><div class="step-num">6</div><div class="step-text"><strong>Test, then revisit</strong>Try it on real tasks for a week. Come back in 3-6 months.</div></div>
+      </div>
+
+      <div class="note">This page keeps your pasted drafts in memory only, for this browser tab. Close or reload it and they're gone, so copy your drafts and your final version somewhere safe (a doc, an email to yourself) as you go.</div>
+
+      <h3 class="sub-title" style="color: var(--white);">How long should your instructions be?</h3>
+      <p>Shorter drafts perform more reliably than long ones. Every sentence should change how the AI responds to you, if a line doesn't do that, cut it.</p>
+      <table>
+        <tr><th>Where it's going</th><th>What we know</th><th>Aim for</th></tr>
+        <tr><td>Claude, personal preferences (Settings &gt; Profile)</td><td>Practically capped at roughly 1,500 characters</td><td>Under 400 words</td></tr>
+        <tr><td>Microsoft Copilot, Custom instructions</td><td>No character limit published by Microsoft, but the field is short and blunt instructions win</td><td>Under 400 words</td></tr>
+      </table>
+    </section>
+  </div>
+</div>
+
+<nav class="stepper">
+  <div class="stepper-inner">
+    <a class="step-link" data-step="know-me" href="#know-me"><span class="step-dot"></span>1. Know Me</a>
+    <a class="step-link" data-step="how-i-work" href="#how-i-work"><span class="step-dot"></span>2. How I Work</a>
+    <a class="step-link" data-step="team" href="#team"><span class="step-dot"></span>3. Team Context</a>
+    <a class="step-link" data-step="avoid" href="#avoid"><span class="step-dot"></span>4. Avoid AI-isms</a>
+    <a class="step-link" data-step="merge" href="#merge"><span class="step-dot"></span>5. Merge &amp; paste</a>
+  </div>
+</nav>
+
+<section id="know-me" class="light">
+  <h2 class="section-title">Prompt 1: Know Me</h2>
+  <p>This builds a picture of who you are, so the AI writes and reasons the way you actually would.</p>
+
+  <div class="card">
+    <div class="card-label">
+      <span>Copy this into a new chat</span>
+      <button class="copy-btn" onclick="copyText('prompt-know-me', this)">Copy prompt</button>
+    </div>
+    <textarea id="prompt-know-me" class="prompt-text" readonly>I want to build a "Know Me" context file so my AI understands who I am and can give me better, more relevant responses.
+
+Before we start, if you have your last annual review or your goals for the coming year handy, upload it now, thinking about it from an organisational perspective. I'll draw on it as we go.
+
+Ask me one question at a time and wait for my answer before moving on. When we've covered everything, write my ready-to-paste AI instructions.
+
+Start with this question: What's your name and your role? Tell me what you actually do day to day, not your job title, just what your work actually looks like.
+
+Then work through the rest of these, one at a time:
+1. Your name and what you actually do day to day
+2. How long you've been doing this work, and how you got here
+3. What you do really well, the thing people come back to you for specifically
+4. What you value most in your work (how you treat people, how you operate, what you won't compromise on)
+5. How the people who know you best would describe you
+6. Whether you've done any personality assessments, Clifton Strengths, Myers-Briggs or similar, and what they said about you as a person
+7. Anything about you personally that shapes how you work or show up for clients</textarea>
+  </div>
+
+  <div class="draft-label">Your draft (paste the AI's finished output here)</div>
+  <textarea id="draft-know-me" class="draft-input" placeholder="Paste your finished Know Me draft here..." oninput="updateProgress()"></textarea>
+  <p class="draft-hint">This gets pulled into your merge prompt in step 5.</p>
+</section>
+
+<section id="how-i-work" class="light">
+  <h2 class="section-title">Prompt 2: Know How I Work</h2>
+  <p>This one is about how you think and communicate, not what you do. It's the piece that stops your AI giving you generic answers that need heavy editing before you can use them.</p>
+
+  <div class="card">
+    <div class="card-label">
+      <span>Copy this into a new chat</span>
+      <button class="copy-btn" onclick="copyText('prompt-how-i-work', this)">Copy prompt</button>
+    </div>
+    <textarea id="prompt-how-i-work" class="prompt-text" readonly>I want to build a "Know How I Work" context file so my AI understands how I think, communicate, and want to be helped, so I stop getting responses that feel off or generic.
+
+Before we start, if you have a couple of outputs you're proud of, or emails whose tone you like, upload them now. Real examples beat descriptions.
+
+Ask me one question at a time and wait for my answer before moving on. When we've covered everything, write my ready-to-paste AI instructions.
+
+Start with this question: How would you describe your communication style? Think about how you write emails or talk to your team, casual, direct, formal, somewhere in between?
+
+Then work through the rest of these, one at a time:
+1. How you'd describe your communication style
+2. Whether you've done any personality assessments (DISC, Enneagram, Myers-Briggs, StrengthsFinder or similar) and what they said about how you communicate or work with others
+3. How you learn best and take in new information (reading, talking it through, seeing examples, figuring it out by doing)
+4. How you prefer to think through a problem or decision (quietly on your own, talking it out, writing it out)
+5. What you never want your AI to sound like when it writes for you. A specific example helps
+6. How you prefer information delivered (bullet points, short paragraphs, detailed explanations, or something else)
+7. What you use AI for most often in your work
+8. Something AI does that drives you mad, or that you always have to fix
+9. Anything you always want your AI to remember when it's helping you</textarea>
+  </div>
+
+  <div class="draft-label">Your draft (paste the AI's finished output here)</div>
+  <textarea id="draft-how-i-work" class="draft-input" placeholder="Paste your finished Know How I Work draft here..." oninput="updateProgress()"></textarea>
+  <p class="draft-hint">This gets pulled into your merge prompt in step 5.</p>
+</section>
+
+<section id="team" class="light">
+  <h2 class="section-title">Prompt 3: Know My Team and Context</h2>
+  <p>This fills in the organisational picture: what you produce, who reads it, and how your tone should shift depending on the audience. Fill in the brackets before you copy it.</p>
+
+  <div class="card">
+    <div class="card-label">
+      <span>Copy this into a new chat, brackets filled in</span>
+      <button class="copy-btn" onclick="copyText('prompt-team', this)">Copy prompt</button>
+    </div>
+    <textarea id="prompt-team" class="prompt-text">I work in [role/team] and mostly use [tools/platforms, e.g. Word, Excel, Teams, SharePoint]. My typical outputs are [reports, meeting summaries, member communications, etc]. My audience is a mix of [internal team, external stakeholders, etc].
+
+I'm attaching the DQLWT business plan and my team's Department Plan for the current year, use these for organisational context, priorities and tone.
+
+Help me draft custom instructions that reflect the tools I use, the kind of outputs I need, and how formal or casual my tone should be depending on audience.</textarea>
+  </div>
+
+  <div class="draft-label">Your draft (paste the AI's finished output here)</div>
+  <textarea id="draft-team" class="draft-input" placeholder="Paste your finished Know My Team and Context draft here..." oninput="updateProgress()"></textarea>
+  <p class="draft-hint">This gets pulled into your merge prompt in step 5.</p>
+</section>
+
+<section id="avoid" class="light">
+  <h2 class="section-title">Prompt 4: What Not to Sound Like</h2>
+  <p>This is where you name the AI habits that make writing feel fake, so your final instructions actively steer away from them, not just describe you, but tell the AI what to avoid.</p>
+
+  <div class="card">
+    <div class="card-label">
+      <span>Copy this into a new chat</span>
+      <button class="copy-btn" onclick="copyText('prompt-avoid', this)">Copy prompt</button>
+    </div>
+    <textarea id="prompt-avoid" class="prompt-text" readonly>I want to capture the AI writing habits and phrases I personally can't stand, so my AI stops doing them and actually sounds like me.
+
+Ask me one question at a time and wait for my answer before moving on. When we've covered everything, write this up as a short set of instructions I can fold into my final AI instructions.
+
+Start with this question: When you read something and immediately think "that's so AI", what's usually the giveaway? Give me a real example if you can.
+
+Then work through the rest of these, one at a time:
+1. Specific words or phrases you never want to see
+2. Formatting habits you dislike (heavy bullet points, bold text everywhere, emoji headers, numbered lists for everything)
+3. Tone habits you dislike (over-enthusiastic, hedging, robotic, apologetic, overly formal)
+4. Structural habits you dislike (a closing summary that repeats what was just said, lists that always come in threes, opening with a rhetorical question)
+5. Anything else that instantly tells you a piece of writing is AI-generated</textarea>
+  </div>
+
+  <div class="reference-box">
+    <div class="ref-title">Need ideas? Borrow from here</div>
+    <p style="margin-bottom:10px;">Wikipedia keeps a running, well-researched list of AI writing tells. Worth a skim before you answer, here are a few examples to get you thinking:</p>
+    <ul class="checklist">
+      <li><strong>Cursed vocabulary:</strong> delve, intricate, tapestry, pivotal, underscore, landscape, foster, testament, enhance, crucial</li>
+      <li><strong>Negative parallelisms:</strong> "It's not a product launch. It's a paradigm shift."</li>
+      <li><strong>Rule-of-three lists:</strong> "innovative, transformative, and groundbreaking"</li>
+      <li><strong>False ranges:</strong> "from intimate gatherings to global movements"</li>
+      <li><strong>Excessive bolding and emoji section headers</strong> where plain prose would do</li>
+      <li><strong>Em dashes</strong> doing the work a comma or full stop should</li>
+      <li><strong>Reflexive summaries:</strong> "Overall," "In conclusion," even when nothing needs recapping</li>
+    </ul>
+    <p style="margin-bottom:0;">Full list: <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing" target="_blank" rel="noopener">Wikipedia, Signs of AI writing</a></p>
+  </div>
+
+  <div class="note">A separate universal instructions set will be applied at account level, catching a lot of common misspellings and AI-isms automatically. Use this section for anything specific you personally don't want, on top of that.</div>
+
+  <div class="draft-label">Your draft (paste the AI's finished output here)</div>
+  <textarea id="draft-avoid" class="draft-input" placeholder="Paste your finished What Not to Sound Like draft here..." oninput="updateProgress()"></textarea>
+  <p class="draft-hint">This gets woven into your merge prompt in step 5, not tacked on as a separate list.</p>
+</section>
+
+<section id="merge" class="light">
+  <h2 class="section-title">Merge and generate your final instructions</h2>
+  <p>Once you have four drafts, build your merge prompt here. It pulls in whatever you've pasted above, works for either Claude or Copilot, and keeps it under 400 words.</p>
+
+  <button class="primary-btn" onclick="buildMerge()">Build my merge prompt</button>
+  <div class="status-msg" id="merge-status"></div>
+
+  <div class="card" id="merge-card" style="display:none; margin-top:16px;">
+    <div class="card-label">
+      <span>Copy this into a new chat</span>
+      <button class="copy-btn" onclick="copyText('prompt-merge', this)">Copy prompt</button>
+    </div>
+    <textarea id="prompt-merge" class="prompt-text" style="min-height:280px;" readonly></textarea>
+  </div>
+
+  <div class="final-step">
+    <div class="ft-title"><span class="badge">!</span> One thing this page can't do for you</div>
+    <p>Once the AI gives you the merged, final version, copy it from that chat and paste it yourself into your own settings, Claude: Settings &gt; Profile &gt; Preferences, or Copilot: Settings &gt; Custom instructions (table below).</p>
+    <p>Nothing on this page saves automatically. Close or refresh this tab and your pasted drafts are gone. Copy your four raw drafts and your final version somewhere safe first, a working doc, an email to yourself, wherever suits, you'll want them again in three to six months.</p>
+  </div>
+
+  <h3 class="sub-title">Where to paste the final version</h3>
+  <table>
+    <tr><th>Tool</th><th>Where it goes</th></tr>
+    <tr><td>Claude, personal</td><td>Settings &gt; Profile &gt; Preferences</td></tr>
+    <tr><td>Microsoft Copilot</td><td>Settings &gt; Custom instructions</td></tr>
+  </table>
+</section>
+
+<footer>Destination Queenstown / Lake Wānaka Tourism · Internal working tool · v1.0</footer>
+
+<script>
+function showCopied(btn) {
+  const original = btn.textContent;
+  btn.textContent = 'Copied';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1800);
+}
+
+function copyToClipboard(text, btn) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showCopied(btn)).catch(() => legacyCopy(text, btn));
+  } else {
+    legacyCopy(text, btn);
+  }
+}
+
+function legacyCopy(text, btn) {
+  const temp = document.createElement('textarea');
+  temp.value = text;
+  temp.style.position = 'fixed';
+  temp.style.opacity = '0';
+  document.body.appendChild(temp);
+  temp.focus();
+  temp.select();
+  try {
+    document.execCommand('copy');
+    showCopied(btn);
+  } catch (e) {
+    btn.textContent = 'Select + Ctrl/Cmd+C';
+  }
+  document.body.removeChild(temp);
+}
+
+function copyText(id, btn) {
+  const el = document.getElementById(id);
+  copyToClipboard(el.value, btn);
+}
+
+function buildMerge() {
+  const know = document.getElementById('draft-know-me').value.trim() || '[paste your Know Me draft]';
+  const how = document.getElementById('draft-how-i-work').value.trim() || '[paste your Know How I Work draft]';
+  const team = document.getElementById('draft-team').value.trim() || '[paste your Know My Team and Context draft]';
+  const avoid = document.getElementById('draft-avoid').value.trim() || '[paste your What Not to Sound Like draft]';
+
+  const prompt = 'Here are four drafts of my AI context.\n\nKnow Me:\n' + know +
+    '\n\nKnow How I Work:\n' + how +
+    '\n\nKnow My Team and Context:\n' + team +
+    '\n\nWhat I Don\'t Want AI to Sound Like:\n' + avoid +
+    '\n\nMerge these into one set of custom instructions I can use in Claude or Copilot. Keep it under 400 words. Cut anything repeated across the four. Keep my voice, weave the things I want avoided into how the instructions are written rather than listing them as a separate rules block, and don\'t add generic AI phrasing.';
+
+  document.getElementById('prompt-merge').value = prompt;
+  document.getElementById('merge-card').style.display = 'block';
+  document.getElementById('merge-status').textContent = 'Merge prompt built below, using whatever drafts you\'ve pasted in so far.';
+  document.getElementById('merge-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateProgress() {
+  const map = { 'know-me': 'draft-know-me', 'how-i-work': 'draft-how-i-work', 'team': 'draft-team', 'avoid': 'draft-avoid' };
+  Object.keys(map).forEach(step => {
+    const has = document.getElementById(map[step]).value.trim().length > 0;
+    const link = document.querySelector('.step-link[data-step="' + step + '"]');
+    if (link) link.classList.toggle('done', has);
+  });
+}
+</script>
+
+</body>
+</html>
